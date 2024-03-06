@@ -2,12 +2,15 @@
 using Bulky.DataAccess.Repository.IRepository;
 using Bulky.Models;
 using Bulky.Models.ViewModels;
+using Bulky.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace BulkyWeb.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = SD.Role_Admin)]
     public class ProductController : Controller
     {
         private readonly IUnitOfWork _unitOfWork;
@@ -20,23 +23,7 @@ namespace BulkyWeb.Areas.Admin.Controllers
         }
         public IActionResult Index()
         {
-            return View(_unitOfWork.Product.GetAll().ToList());
-        }
-
-        public IActionResult Delete(int? id)
-        {
-            Product obj = _unitOfWork.Product.Get(Product => Product.Id == id);
-            if (obj == null) { return NotFound(); }
-            return Delete(obj);
-        }
-
-        [HttpPost]
-        public IActionResult Delete(Product obj)
-        {
-            if(!ModelState.IsValid) { return View(); }
-            _unitOfWork.Product.Remove(obj);
-            _unitOfWork.Save();
-            return RedirectToAction("Index");
+            return View(_unitOfWork.Product.GetAll(includeProperties:"Category").ToList());
         }
 
         public IActionResult Upsert(int? id)
@@ -66,11 +53,15 @@ namespace BulkyWeb.Areas.Admin.Controllers
                 });
                 return View(obj); 
             }
+            if(obj.Product.CoverImageUrl == null)
+            {
+                obj.Product.CoverImageUrl = string.Empty;
+            }
             string wwwRootPath = _webHostEnvironment.WebRootPath;
             if (file != null)
             {
                 string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                string productImage = Path.Combine(wwwRootPath,@"/Images/Product");
+                string productImage = Path.Combine(wwwRootPath,@"Images/Product");
                 if(!string.IsNullOrEmpty(obj.Product.CoverImageUrl))
                 {
                     string oldImagePath = Path.Combine(wwwRootPath, obj.Product.CoverImageUrl.TrimStart('/'));
@@ -89,15 +80,42 @@ namespace BulkyWeb.Areas.Admin.Controllers
             if(obj.Product.Id != 0)
             {
                 _unitOfWork.Product.Update(obj.Product);
+                TempData["Success"] = "Product updated successfully";
             }
             else
             {
                 _unitOfWork.Product.Add(obj.Product);
+                TempData["Success"] = "Product created successfully";
             }
-            _unitOfWork.Product.Add(obj.Product);
             _unitOfWork.Save();
-            TempData["Success"] = "Product created successfully";
+            
             return RedirectToAction("Index");
         }
+        #region API CALLS
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var products = _unitOfWork.Product.GetAll(includeProperties: "Category").ToList();
+            return Json(new { data = products });
+        }
+        [HttpDelete]
+        public IActionResult Delete(int id)
+        {
+            var obj = _unitOfWork.Product.Get(Product => Product.Id == id);
+            if(obj == null)
+            {
+                return Json(new { success = false, message = "Error while deleting" });
+            }
+            string wwwRootPath = _webHostEnvironment.WebRootPath;
+            string imagePath = Path.Combine(wwwRootPath, obj.CoverImageUrl.TrimStart('/'));
+            if(System.IO.File.Exists(imagePath))
+            {
+                System.IO.File.Delete(imagePath);
+            }
+            _unitOfWork.Product.Remove(obj);
+            _unitOfWork.Save();
+            return Json(new { success = true, message = "Delete successful" });
+        }
+        #endregion
     }
 }
