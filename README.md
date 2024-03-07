@@ -1,6 +1,6 @@
-# Welcome to myLibrary!
+# Welcome to BulkyWeb!
 
-myLibrary is your go-to solution for hassle-free bulk book purchasing!
+BulkyWeb is a full-stack application for eCommerce created using ASP.NET Core MVC architecture.
 
 
 Key Features:
