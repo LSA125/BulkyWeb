@@ -10,3 +10,9 @@ Key Features:
  - Dynamic Views: Explore our dynamic interface that adapts to your browsing needs.
  - API Endpoints: Interact with our system effortlessly using AJAX and ASP.NET Core APIs.
  - Efficient Data Handling: Seamlessly store and retrieve information from our robust SQL Server database.
+
+![](https://github.com/LSA125/Bulky_MVC/blob/master/Demo/Screenshot_1.png)
+![](https://github.com/LSA125/Bulky_MVC/blob/master/Demo/Screenshot_2.png)
+![](https://github.com/LSA125/Bulky_MVC/blob/master/Demo/Screenshot_3.png)
+![](https://github.com/LSA125/Bulky_MVC/blob/master/Demo/Screenshot_4.png)
+![](https://github.com/LSA125/Bulky_MVC/blob/master/Demo/Screenshot_5.png)
