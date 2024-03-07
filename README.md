@@ -1,6 +1,6 @@
-# Welcome to Bulky MVC!
+# Welcome to myLibrary!
 
-Bulky MVC is your go-to solution for hassle-free bulk book purchasing. Whether you're a wholesale buyer or just love stocking up on your favorite reads, this e-commerce platform has got you covered.
+myLibrary is your go-to solution for hassle-free bulk book purchasing!
 
 
 Key Features:
